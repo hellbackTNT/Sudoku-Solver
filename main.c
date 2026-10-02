@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 //Test string you can use :xx8x5xxx65x3xxx94221x9xx758x3xx826x1xx46x95xx6x913xx7x391xx8x25452xxx8x78xxx2x3xx
+//Test string you can use but medium :x8xxx4xxx4xxxxxx9xxx1x7x5x3x2x35xxxxx73x2x96xxxxx17x2x9x8x4x1xxx5xxxxxx8xxx5xxx3x
 
     char lengh[82];
     int sudoku[10][9][9], AmmountOfCharacters = 0, SudokuLayer = 0, SudokuRow = 0, SudokuColum = 0;
@@ -54,7 +55,7 @@ void FindWhatEmptyCanBe () {
                         potentials[sudoku[0][TempSudokuRow][TempSudokuColum] - 1] = 0;
                     }
                     TempSudokuColum++;
-                    if (TempSudokuColum - HoldingValueX >= 2) {
+                    if (TempSudokuColum - HoldingValueX >= 3) {
                         TempSudokuColum = HoldingValueX;
                         TempSudokuRow++;
                     }
@@ -83,7 +84,6 @@ void FindWhatEmptyCanBe () {
             SudokuRow++;
         }
     }
-
 }
 
 int FillingWhatEmptyCanBe () {
@@ -96,6 +96,7 @@ int FillingWhatEmptyCanBe () {
             if (sudoku[0][TempSudokuRow][TempSudokuColum] == 0) {
                 while (true) {
                     if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == -1) {
+                        SudokuLayer = 1;
                         break;
                     }
                     if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == NumberToSearchFor) {
@@ -105,11 +106,39 @@ int FillingWhatEmptyCanBe () {
                     }
                     SudokuLayer++;
                 }
-                if (HasMoved == 1) {
-                    sudoku [0][SudokuRow][SudokuColum] = NumberToSearchFor;
+            }
+            TempSudokuColum++;
+        }
+        if (HasMoved == 1) {
+            sudoku [0][SudokuRow][SudokuColum] = NumberToSearchFor;
+            HasClearedCell = 1;
+        }
+    }
+
+    SudokuColum = 0, SudokuLayer = 1, SudokuRow = 0, TempSudokuColum = 0, TempSudokuRow = 0;
+
+    for ( ;SudokuColum <= 8 ; SudokuColum++) {
+        int HasMoved = 0;
+        while (TempSudokuRow <= 8) {
+            if (sudoku[0][TempSudokuRow][TempSudokuColum] == 0) {
+                while (true) {
+                    if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == -1) {
+                        SudokuLayer = 1;
+                        break;
+                    }
+                    if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == NumberToSearchFor) {
+                        SudokuColum = TempSudokuColum;
+                        SudokuRow = TempSudokuRow;
+                        HasMoved++;
+                    }
+                    SudokuLayer++;
                 }
             }
-        TempSudokuColum++;
+            TempSudokuRow++;
+        }
+        if (HasMoved == 1) {
+            sudoku [0][SudokuRow][SudokuColum] = NumberToSearchFor;
+            HasClearedCell = 1;
         }
     }
 }
@@ -140,6 +169,10 @@ int main(void) {
         HasClearedCell = 0;
         FindWhatEmptyCanBe ();
         FillingWhatEmptyCanBe ();
+        NumberToSearchFor++;
+        if (NumberToSearchFor >= 9) {
+            NumberToSearchFor = 1;
+        }
     } while (HasClearedCell);
 
     SudokuRow = 0;
