@@ -73,7 +73,7 @@ void FindWhatEmptyCanBe () {
                     SudokuLayer++;
                 }
             }
-            if (SudokuLayer <= 8) {
+            if (SudokuLayer <= 9) {
                 sudoku[SudokuLayer][SudokuRow][SudokuColum] = -1;
             }
         }
@@ -88,26 +88,23 @@ void FindWhatEmptyCanBe () {
 
 int FillingWhatEmptyCanBe () {
 
-    SudokuColum = 0, SudokuLayer = 1, SudokuRow = 0, TempSudokuColum = 0, TempSudokuRow = 0;
-
-    for ( ;SudokuRow <= 8 ; SudokuRow++) {
+    for (SudokuRow = 0 ;SudokuRow <= 8 ; SudokuRow++) {
+        TempSudokuRow = SudokuRow;
+        SudokuColum = 0;
         int HasMoved = 0;
-        while (TempSudokuColum <= 8) {
-            if (sudoku[0][TempSudokuRow][TempSudokuColum] == 0) {
-                while (true) {
-                    if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == -1) {
-                        SudokuLayer = 1;
-                        break;
-                    }
-                    if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == NumberToSearchFor) {
-                        SudokuColum = TempSudokuColum;
-                        SudokuRow = TempSudokuRow;
-                        HasMoved++;
-                    }
-                    SudokuLayer++;
+
+        for (TempSudokuColum = 0; TempSudokuColum <= 8; TempSudokuColum++) {
+            if (sudoku[0][TempSudokuRow][TempSudokuColum] != 0)
+                continue;
+
+            for (SudokuLayer = 1; SudokuLayer <= 9; SudokuLayer++) {
+                if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == -1)
+                    break;
+                if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == NumberToSearchFor) {
+                    SudokuColum = TempSudokuColum;
+                    HasMoved++;
                 }
             }
-            TempSudokuColum++;
         }
         if (HasMoved == 1) {
             sudoku [0][SudokuRow][SudokuColum] = NumberToSearchFor;
@@ -115,26 +112,25 @@ int FillingWhatEmptyCanBe () {
         }
     }
 
-    SudokuColum = 0, SudokuLayer = 1, SudokuRow = 0, TempSudokuColum = 0, TempSudokuRow = 0;
+    FindWhatEmptyCanBe();
 
-    for ( ;SudokuColum <= 8 ; SudokuColum++) {
+    for (SudokuColum = 0 ;SudokuColum <= 8 ; SudokuColum++) {
+        TempSudokuColum = SudokuColum;    /* FIX: scan the column the loop is on */
+        SudokuRow = 0;
         int HasMoved = 0;
-        while (TempSudokuRow <= 8) {
-            if (sudoku[0][TempSudokuRow][TempSudokuColum] == 0) {
-                while (true) {
-                    if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == -1) {
-                        SudokuLayer = 1;
-                        break;
-                    }
-                    if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == NumberToSearchFor) {
-                        SudokuColum = TempSudokuColum;
-                        SudokuRow = TempSudokuRow;
-                        HasMoved++;
-                    }
-                    SudokuLayer++;
+
+        for (TempSudokuRow = 0; TempSudokuRow <= 8; TempSudokuRow++) {
+            if (sudoku[0][TempSudokuRow][TempSudokuColum] != 0)
+                continue;
+
+            for (SudokuLayer = 1; SudokuLayer <= 9; SudokuLayer++) {
+                if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == -1)
+                    break;
+                if (sudoku[SudokuLayer][TempSudokuRow][TempSudokuColum] == NumberToSearchFor) {
+                    SudokuRow = TempSudokuRow;
+                    HasMoved++;
                 }
             }
-            TempSudokuRow++;
         }
         if (HasMoved == 1) {
             sudoku [0][SudokuRow][SudokuColum] = NumberToSearchFor;
@@ -167,11 +163,9 @@ int main(void) {
     //Loops over the two functions until HasClearedCell is false
     do {
         HasClearedCell = 0;
-        FindWhatEmptyCanBe ();
-        FillingWhatEmptyCanBe ();
-        NumberToSearchFor++;
-        if (NumberToSearchFor >= 9) {
-            NumberToSearchFor = 1;
+        for (NumberToSearchFor = 1; NumberToSearchFor <= 9; NumberToSearchFor++) {
+            FindWhatEmptyCanBe();
+            FillingWhatEmptyCanBe();
         }
     } while (HasClearedCell);
 
